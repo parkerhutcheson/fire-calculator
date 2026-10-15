@@ -44,6 +44,7 @@ export interface Inputs {
   preMedicareHealthcare: number;
 
   // Home
+  ownsHome: boolean;
   hasMortgage: boolean;
   homeValue: number;
   mortgageBalance: number;
@@ -99,6 +100,7 @@ export const DEFAULT_INPUTS: Inputs = {
   annualSpend: 38_000,
   preMedicareHealthcare: 7_000,
 
+  ownsHome: true,
   hasMortgage: true,
   homeValue: 400_000,
   mortgageBalance: 300_000,

@@ -247,11 +247,12 @@ export function project(inp: Inputs): Result {
   };
   let rothBasis = Math.min(inp.rothIraBasis, inp.rothIraBalance);
   let brokerageBasis = Math.min(inp.brokerageBasis, inp.brokerageBalance);
-  let mortgageNominal = inp.hasMortgage ? inp.mortgageBalance : 0;
-  let homeValue = inp.hasMortgage || inp.homeValue > 0 ? inp.homeValue : 0;
+  const hasMortgage = inp.ownsHome && inp.hasMortgage;
+  let mortgageNominal = hasMortgage ? inp.mortgageBalance : 0;
+  let homeValue = inp.ownsHome ? inp.homeValue : 0;
   let salary = inp.salary;
 
-  if (inp.hasMortgage && inp.mortgageBalance > 0) {
+  if (hasMortgage && inp.mortgageBalance > 0) {
     const firstMonthInterest = inp.mortgageBalance * (pct(inp.mortgageRate) / 12);
     if (inp.mortgagePayment <= firstMonthInterest) {
       warnings.push({
@@ -444,7 +445,7 @@ export function project(inp: Inputs): Result {
   const taxableWages = Math.max(0, inp.salary - k401Now - hsaNow);
   const incomeTaxNow = incomeTax({ ordinary: Math.max(0, taxableWages - tradIraNow), ltcg: 0 }, taxCtx);
   const takeHome = taxableWages - payrollTax(inp.salary - hsaNow, inp.filing) - incomeTaxNow.federal - incomeTaxNow.state;
-  const mortgageAnnual = inp.hasMortgage && inp.mortgageBalance > 0 ? inp.mortgagePayment * 12 : 0;
+  const mortgageAnnual = hasMortgage && inp.mortgageBalance > 0 ? inp.mortgagePayment * 12 : 0;
   const leftoverCashFlow = takeHome - tradIraNow - rothNow - inp.brokerageContrib - inp.annualSpend - mortgageAnnual;
   const matchNow = first.employerMatch;
   const savingsRate =

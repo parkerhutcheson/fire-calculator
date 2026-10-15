@@ -156,6 +156,15 @@ describe("project", () => {
     expect(r.rows.at(-1)!.inflationFactor).toBe(1);
   });
 
+  it("ignores home and mortgage when you don't own property", () => {
+    const owner = project(base());
+    const renter = project(base({ ownsHome: false }));
+    expect(renter.rows[0].homeValue).toBe(0);
+    expect(renter.rows[0].mortgageBalance).toBe(0);
+    expect(renter.fireBreakdown.mortgagePayoff).toBe(0);
+    expect(renter.leftoverCashFlow).toBeGreaterThan(owner.leftoverCashFlow);
+  });
+
   it("pays the mortgage off over time", () => {
     const r = project(base());
     const at61 = r.rows.find((row) => row.age === 61)!;

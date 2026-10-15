@@ -26,10 +26,7 @@ export function Calculator() {
         {/* Inputs */}
         <aside className="border-line px-4 pt-6 sm:px-8 lg:sticky lg:top-0 lg:h-dvh lg:overflow-y-auto lg:border-r lg:pb-10">
           <header className="mb-4">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-4xl" aria-hidden>
-                🔥
-              </span>
+            <div className="flex items-center justify-end gap-2">
               <div className="flex gap-1 text-xs text-ink-2">
                 <button
                   type="button"
@@ -50,7 +47,7 @@ export function Calculator() {
                 </button>
               </div>
             </div>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight">FIRE Calculator</h1>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight">FIRE Calculator</h1>
             <p className="mt-1.5 text-sm leading-relaxed text-ink-2">
               Financial Independence, Retire Early. Fill in what applies to you; results update as you type and are saved in this browser.
             </p>

@@ -47,11 +47,11 @@ export function InputsPanel({ inputs: i, update, result }: Props) {
           ]}
         />
         <PercentField
-          label="State income tax rate"
+          label="State income tax in retirement"
           value={i.stateTaxRate}
           onChange={set("stateTaxRate")}
           max={15}
-          hint="Use 0% for states with no income tax (TX, FL, WA, NV, TN, SD, WY, AK, NH)."
+          hint="The rate your state will charge on your retirement withdrawals. Use 0% for states with no income tax (TX, FL, WA, NV, TN, SD, WY, AK, NH)."
         />
         <Segmented
           label="When do you want to retire?"
@@ -196,7 +196,7 @@ export function InputsPanel({ inputs: i, update, result }: Props) {
           value={i.annualSpend}
           onChange={set("annualSpend")}
           suffix="/yr"
-          hint="Everything you spend in a year in today's dollars, including property tax and insurance but not your mortgage principal and interest. Your mortgage is handled separately and drops off once it's paid off."
+          hint="Everything you spend in a year in today's dollars, including rent or property tax and insurance, but not your mortgage principal and interest. Your mortgage is handled separately and drops off once it's paid off."
         />
         <MoneyField
           label="Extra healthcare before Medicare"
@@ -210,36 +210,51 @@ export function InputsPanel({ inputs: i, update, result }: Props) {
       <Section
         icon="🏠"
         title="Home & mortgage"
-        summary={i.hasMortgage ? `${moneyCompact(i.mortgageBalance)} owed` : i.homeValue > 0 ? `${moneyCompact(i.homeValue)} home` : "None"}
+        summary={
+          !i.ownsHome ? "No property" : i.hasMortgage ? `${moneyCompact(i.mortgageBalance)} owed` : `${moneyCompact(i.homeValue)} home, paid off`
+        }
       >
-        <Toggle label="I have a mortgage" checked={i.hasMortgage} onChange={set("hasMortgage")} />
-        <Grid>
-          <MoneyField
-            label="Home value"
-            value={i.homeValue}
-            onChange={set("homeValue")}
-            hint="Counts toward net worth, not your FIRE number. You can't spend your house."
-          />
-          <PercentField label="Home appreciation" value={i.homeAppreciation} onChange={set("homeAppreciation")} max={15} />
-        </Grid>
-        {i.hasMortgage && (
+        <Segmented
+          label="Do you own a home or property?"
+          value={i.ownsHome ? "yes" : "no"}
+          onChange={(v) => update("ownsHome", v === "yes")}
+          options={[
+            { value: "yes", label: "Yes, I own" },
+            { value: "no", label: "No" },
+          ]}
+        />
+        {i.ownsHome && (
           <>
             <Grid>
-              <MoneyField label="Mortgage balance" value={i.mortgageBalance} onChange={set("mortgageBalance")} />
-              <PercentField label="Interest rate" value={i.mortgageRate} onChange={set("mortgageRate")} max={20} decimals={3} />
+              <MoneyField
+                label="Home value"
+                value={i.homeValue}
+                onChange={set("homeValue")}
+                hint="Counts toward net worth, not your FIRE number. You can't spend your house."
+              />
+              <PercentField label="Home appreciation" value={i.homeAppreciation} onChange={set("homeAppreciation")} max={15} />
             </Grid>
-            <MoneyField
-              label="Monthly payment (principal + interest)"
-              value={i.mortgagePayment}
-              onChange={set("mortgagePayment")}
-              suffix="/mo"
-              hint={
-                <>
-                  ~{money(monthlyInterest)}/mo is interest right now.{" "}
-                  {payoffRow ? `Paid off around age ${payoffRow.age}.` : "Not paid off within your plan."}
-                </>
-              }
-            />
+            <Toggle label="I have a mortgage" checked={i.hasMortgage} onChange={set("hasMortgage")} />
+            {i.hasMortgage && (
+              <>
+                <Grid>
+                  <MoneyField label="Mortgage balance" value={i.mortgageBalance} onChange={set("mortgageBalance")} />
+                  <PercentField label="Interest rate" value={i.mortgageRate} onChange={set("mortgageRate")} max={20} decimals={3} />
+                </Grid>
+                <MoneyField
+                  label="Monthly payment (principal + interest)"
+                  value={i.mortgagePayment}
+                  onChange={set("mortgagePayment")}
+                  suffix="/mo"
+                  hint={
+                    <>
+                      ~{money(monthlyInterest)}/mo is interest right now.{" "}
+                      {payoffRow ? `Paid off around age ${payoffRow.age}.` : "Not paid off within your plan."}
+                    </>
+                  }
+                />
+              </>
+            )}
           </>
         )}
       </Section>
